@@ -2,10 +2,9 @@ import {all, cps, call, put, take, takeEvery} from 'redux-saga/effects'
 
 export const ITEM_REQUEST = `ITEM_REQUEST`;
 
-export function zitemsRequest(url){
+export function zitemsRequest(){
     return {
-        type: ITEM_REQUEST,
-        payload: url
+        type: ITEM_REQUEST
     }
 }
 
@@ -24,25 +23,48 @@ export function zitemsIsLoading(bool) {
 }
 
 export function zitemsFetchDataSuccess(items) {
+    console.log('ITEMS_FETCH_DATA_SUCCESS');
     return {
         type: 'ITEMS_FETCH_DATA_SUCCESS',
         items
     };
 }
 
-export function * itemsFetchDataSaga(url){
-        yield put(aitemsIsLoading(true));
-        fetch(url)
+export function *itemsFetchDataSaga(){
+
+        yield put(zitemsIsLoading(true));
+
+        const url = 'http://5826ed963900d612000138bd.mockapi.io/items';
+        const response = yield call(() => fetch(url));
+        console.log(response);
+
+        const items = response.json();
+        /*if(!response.ok){
+            throw Error(response.status)
+        }*/
+
+        //console.log(response);
+        //const items = response.json();
+        console.log(items);
+        //console.log({items});
+        yield put(zitemsIsLoading(false));
+        yield put(zitemsHasErrored(false));
+        yield put(zitemsFetchDataSuccess(items));
+
+
+        /*fetch(url)
             .then((response) =>{
                 if(!response.ok){
                     throw Error(response.status)
                 }
-                yield put(zitemsIsLoading(false));
+                yield put(zitemsIsLoading(true));
                 return response;
             })
             .then((response) => response.json())
             .then((items)=> yield put(zitemsFetchDataSuccess(items)))
             .catch(()=> yield put(zitemsHasErrored(true)));
+            */
+
 }
 
 export function  itemsHasErrored(state = false, action) {
@@ -75,6 +97,7 @@ export function items(state = [], action) {
             return state;
     }
 }
+
 
 export const saga = function * () {
     yield takeEvery( ITEM_REQUEST, itemsFetchDataSaga)

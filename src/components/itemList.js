@@ -16,10 +16,12 @@ class ItemList extends Component {
     }*/
 
     componentDidMount(){
-        this.props.fetchData('http://5826ed963900d612000138bd.mockapi.io/items');
+        this.props.zitemsRequest();
+        //this.props.fetchData('http://5826ed963900d612000138bd.mockapi.io/items');
     }
 
     render() {
+        let items = [];
         if(this.props.hasErrored){
             return <p>Sorry! There was an error loading the items</p>;
         }
@@ -28,13 +30,16 @@ class ItemList extends Component {
             return <p>Loading...</p>
         }
 
+
+        /*TODO Из саги прилетает промис в this.props.items. (?) не понимаю почему */
+        /*{this.props.items.map((item)=>(
+                  <li key={item.id}>
+                      {item.label}
+                  </li>
+              ))}*/
         return (
             <ul>
-                {this.props.items.map((item)=>(
-                    <li key={item.id}>
-                        {item.label}
-                    </li>
-                ))}
+
             </ul>
         )
     }
@@ -69,12 +74,7 @@ const  mapStateToProps = (state) => {
     };
 };
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-        fetchData: (url) => dispatch(zitemsIsLoading(url))
-    };
-};
 
 
 
-export default connect (mapStateToProps, mapDispatchToProps )(ItemList)
+export default connect (mapStateToProps, { zitemsRequest } )(ItemList)
